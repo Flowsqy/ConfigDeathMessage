@@ -1,0 +1,5 @@
+name: "ConfigDeathMessage"
+author: "Flowsqy"
+version: "${version}"
+main: "fr.flowsqy.configdeathmessage.ConfigDeathMessagePlugin"
+api-version: "1.13"
