@@ -22,7 +22,7 @@ public class MessageRegistryLoader {
 
     public void load(@NotNull ConfigLoader configLoader, @NotNull Plugin plugin, @NotNull String fileName) {
         file = configLoader.initFile(plugin.getDataFolder(),
-                Objects.requireNonNull(plugin.getResourceAsStream(fileName)), fileName);
+                Objects.requireNonNull(plugin.getResource(fileName)), fileName);
     }
 
     @NotNull
