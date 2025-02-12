@@ -1,0 +1,9 @@
+[versions]
+junit-jupiter = "5.10.2"
+annotations = "24.0.1"
+spigot-api = "1.21.4-R0.1-SNAPSHOT"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot-api" }
