@@ -44,25 +44,31 @@ public class MessageRegistryLoader {
             if (line.length() == 0 || line.charAt(0) == '#') {
                 continue;
             }
-            final int assignationIndex = line.indexOf('=');
+            int assignationIndex = line.indexOf('=');
             if (assignationIndex < 1) {
                 logger.warning("Invalid line in message registry : '" + line + "'");
                 continue;
             }
             final String id = line.substring(0, assignationIndex);
             final boolean isJson = assignationIndex + 1 < line.length() && line.charAt(assignationIndex + 1) == 'j';
-            final String rawMessage = line.substring(isJson ? assignationIndex + 1 : assignationIndex);
-            final BaseComponent message;
-
             if (isJson) {
-                try {
-                    message = ComponentSerializer.deserialize(rawMessage);
-                } catch (Exception e) {
-                    logger.warning("Invalid json value for the id '" + id + "'");
-                    continue;
-                }
+                assignationIndex++;
+            }
+            final BaseComponent message;
+            if (++assignationIndex == line.length()) {
+                message = new TextComponent();
             } else {
-                message = TextComponent.fromLegacy(ChatColor.translateAlternateColorCodes('&', rawMessage));
+                final String rawMessage = line.substring(assignationIndex);
+                if (isJson) {
+                    try {
+                        message = ComponentSerializer.deserialize(rawMessage);
+                    } catch (Exception e) {
+                        logger.warning("Invalid json value for the id '" + id + "'");
+                        continue;
+                    }
+                } else {
+                    message = TextComponent.fromLegacy(ChatColor.translateAlternateColorCodes('&', rawMessage));
+                }
             }
             final List<BaseComponent> messages = registry.computeIfAbsent(id, s -> new LinkedList<>());
             messages.add(message);
