@@ -1,0 +1,8 @@
+# Each line that starts with a '#' is ignored
+# Each message line consist in an identifier and a value, separated by a '='
+# If you use '=j' instead of '=', you can use json type messages
+
+# For example, the two next lines store the text 'Hello' in red :
+#legacy-message=&cHello
+#message=j{"text":"Hello","color":"red"}
+
