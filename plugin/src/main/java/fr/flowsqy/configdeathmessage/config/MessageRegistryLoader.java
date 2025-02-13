@@ -12,9 +12,13 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class MessageRegistryLoader {
 
@@ -26,7 +30,7 @@ public class MessageRegistryLoader {
     }
 
     @NotNull
-    public Map<String, List<String>> getMessages(@NotNull Logger logger) {
+    public Map<String, List<BaseComponent>> loadMessages(@NotNull Logger logger) {
         final List<String> lines;
         try {
             lines = Files.readAllLines(file.toPath());
@@ -34,29 +38,34 @@ public class MessageRegistryLoader {
             logger.log(Level.WARNING, "Can not read the message registry", e);
             return Collections.emptyMap();
         }
-        final Map<String, List<String>> registry = new HashMap<>();
+        final Map<String, List<BaseComponent>> registry = new HashMap<>();
         for (String line : lines) {
             line = line.trim();
             if (line.length() == 0 || line.charAt(0) == '#') {
                 continue;
             }
-            final String[] parts = line.split("=", 2);
-            if (parts.length != 2) {
+            final int assignationIndex = line.indexOf('=');
+            if (assignationIndex < 1) {
                 logger.warning("Invalid line in message registry : '" + line + "'");
                 continue;
             }
-            final String id = parts[0];
-            final String rawMessage = parts[1];
-            final String message;
-            try {
-                message = ChatColor.translateAlternateColorCodes('&', rawMessage);
-            } catch (Exception e) {
-                logger.warning("Invalid json value for the id '" + id + "'");
-                continue;
+            final String id = line.substring(0, assignationIndex);
+            final boolean isJson = assignationIndex + 1 < line.length() && line.charAt(assignationIndex + 1) == 'j';
+            final String rawMessage = line.substring(isJson ? assignationIndex + 1 : assignationIndex);
+            final BaseComponent message;
+
+            if (isJson) {
+                try {
+                    message = ComponentSerializer.deserialize(rawMessage);
+                } catch (Exception e) {
+                    logger.warning("Invalid json value for the id '" + id + "'");
+                    continue;
+                }
+            } else {
+                message = TextComponent.fromLegacy(ChatColor.translateAlternateColorCodes('&', rawMessage));
             }
-            final List<String> messages = registry.computeIfAbsent(id, s -> new LinkedList<>());
+            final List<BaseComponent> messages = registry.computeIfAbsent(id, s -> new LinkedList<>());
             messages.add(message);
-            registry.put(id, messages);
         }
         return registry;
     }
