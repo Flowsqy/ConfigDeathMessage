@@ -13,6 +13,21 @@ public class MessagesManager {
 
     @Nullable
     public String getMessage(@NotNull Player victim, @NotNull DamageType damageType, @Nullable Entity killer) {
+        String[] messages = null;
+        if (killer != null) {
+            final var killerType = killer.getType();
+            if (killerType.isRegistered()) {
+                if (killer instanceof Player player) {
+                    final var playerInv = player.getInventory();
+                    final var mainHandItem = playerInv.getItemInMainHand();
+                    if (mainHandItem != null) {
+
+                    }
+                }
+                if (messages == null) {
+                }
+            }
+        }
         return null;
     }
 
