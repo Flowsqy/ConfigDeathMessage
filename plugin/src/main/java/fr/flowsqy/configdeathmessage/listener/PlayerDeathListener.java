@@ -5,7 +5,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import fr.flowsqy.configdeathmessage.message.MessagesManager;
+
 public class PlayerDeathListener implements Listener {
+
+    private final MessagesManager messagesManager;
+
+    public PlayerDeathListener(MessagesManager messagesManager) {
+        this.messagesManager = messagesManager;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -14,7 +22,12 @@ public class PlayerDeathListener implements Listener {
             return;
         }
         final var damageSource = lastDamageCause.getDamageSource();
-        final var damageType = damageSource.getDamageType();
+        final var message = messagesManager.getMessage(event.getEntity(), damageSource.getDamageType(),
+                damageSource.getCausingEntity());
+        if (message == null) {
+            return;
+        }
+        event.setDeathMessage(message);
     }
 
 }
