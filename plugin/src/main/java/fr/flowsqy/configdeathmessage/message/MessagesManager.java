@@ -122,7 +122,7 @@ public class MessagesManager {
     @NotNull
     private BaseComponent getRandomMessage(@NotNull BaseComponent[] messages) {
         if (messages.length == 1) {
-            return messages[0];
+            return messages[0].duplicate();
         }
         return messages[random.nextInt(messages.length)].duplicate();
     }
