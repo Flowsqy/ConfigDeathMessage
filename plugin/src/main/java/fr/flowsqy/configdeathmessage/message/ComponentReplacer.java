@@ -24,8 +24,11 @@ public class ComponentReplacer {
             @NotNull BaseComponent replacement) {
         final var originalToExtras = originalToExtras(message, pattern, replacement);
         final var previousExtras = message.getExtra();
-        final var extras = new ArrayList<BaseComponent>(
-                originalToExtras.size() + (previousExtras == null ? 0 : previousExtras.size()));
+        final var extraSize = originalToExtras.size() + (previousExtras == null ? 0 : previousExtras.size());
+        if (extraSize < 1) {
+            return;
+        }
+        final var extras = new ArrayList<BaseComponent>(extraSize);
         extras.addAll(originalToExtras);
         if (previousExtras != null) {
             for (var extra : previousExtras) {
