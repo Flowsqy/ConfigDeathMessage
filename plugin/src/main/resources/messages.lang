@@ -29,6 +29,6 @@
 # For example:
 #arrow=Someone threw an arrow at &7%victim%
 #arrow=&7%victim% &fwas shot by a &8%killer%
-#arrow.player=&7%victim% &f was shot by &c%killer%
-#arrow.item=&7%victim% &f was shot by &c%killer% &fusing &4%item%
+#arrow.player=&7%victim% &fwas shot by &c%killer%
+#arrow.item=&7%victim% &fwas shot by &c%killer% &fusing &4%item%
 
