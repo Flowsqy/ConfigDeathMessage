@@ -6,3 +6,29 @@
 #legacy-message=&cHello
 #message=j{"text":"Hello","color":"red"}
 
+# The key should be a damage type (https://minecraft.wiki/w/Damage_type)
+# If a player die from a specific damage type, the corresponding message will be picked
+#
+# You can add a modifier to the key with a dot. (<damage-type>.<modifier>)
+# Valid modifier are 'player' and 'item'
+# 'player' is used when the player's death is caused by another player
+# 'item' is used when the player causing the death have an item in its hand
+#
+# If 'item' is not set for a damage type, it will fallback to its 'player' variant
+# If 'player' is not set for a damage type, it will fallback to its base variant
+# If the base variant is not set, the default message will be used
+#
+# You have the following placeholders
+# %victim% : the name of the victim
+# %killer% : if the death is caused by an entity, the type of the entity
+# %killer% : (only in 'player' variant) the name of the killer
+# %item%   : (only in 'item' variant) the name of the item in the killer main hand if any, otherwise its type 
+#
+# If you specify multiple times the same key, a random message will be picked from the list
+#
+# For example:
+#arrow=Someone threw an arrow at &7%victim%
+#arrow=&7%victim% &fwas shot by a &8%killer%
+#arrow.player=&7%victim% &f was shot by &c%killer%
+#arrow.item=&7%victim% &f was shot by &c%killer% &fusing &4%item%
+
