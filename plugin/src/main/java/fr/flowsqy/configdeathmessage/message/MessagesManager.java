@@ -1,6 +1,7 @@
 package fr.flowsqy.configdeathmessage.message;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -12,15 +13,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class MessagesManager {
 
     private final Map<String, MessagesData> registry;
     private final Random random;
+    private final ComponentReplacer componentReplacer;
 
     public MessagesManager(@NotNull Map<String, MessagesData> registry) {
         this.registry = registry;
         random = new Random();
+        componentReplacer = new ComponentReplacer();
     }
 
     @Nullable
@@ -54,7 +59,8 @@ public class MessagesManager {
 
     @NotNull
     private BaseComponent replaceBasePlaceholders(@NotNull BaseComponent message, @NotNull Player victim) {
-        // TODO Apply base placeholders
+        final var playerName = new TextComponent(victim.getName());
+        componentReplacer.replace(message, "%victim%", playerName);
         return message;
     }
 
@@ -71,7 +77,8 @@ public class MessagesManager {
     @NotNull
     private BaseComponent replaceKillerPlaceholders(@NotNull BaseComponent message, @NotNull Player victim,
             @NotNull Entity killer) {
-        // Replace entity type
+        final var entityName = new TranslatableComponent(killer.getType().getTranslationKey());
+        componentReplacer.replace(message, "%killer%", entityName);
         return replaceBasePlaceholders(message, victim);
     }
 
@@ -88,7 +95,8 @@ public class MessagesManager {
     @NotNull
     private BaseComponent replacePlayerPlaceholders(@NotNull BaseComponent message, @NotNull Player victim,
             @NotNull Player killer) {
-        // Replace player name
+        final var killerName = new TextComponent(killer.getName());
+        componentReplacer.replace(message, "%killer%", killerName);
         return replaceBasePlaceholders(message, victim);
     }
 
@@ -104,7 +112,10 @@ public class MessagesManager {
     @NotNull
     private BaseComponent replaceItemPlaceholders(@NotNull BaseComponent message, @NotNull Player victim,
             @NotNull Player killer, @NotNull ItemStack itemStack) {
-        // Replace item name
+        final var itemName = Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName();
+        final var itemComponent = itemName != null ? new TextComponent(itemName)
+                : new TranslatableComponent(itemStack.getTranslationKey());
+        componentReplacer.replace(message, "%item%", itemComponent);
         return replacePlayerPlaceholders(message, victim, killer);
     }
 
@@ -113,7 +124,7 @@ public class MessagesManager {
         if (messages.length == 1) {
             return messages[0];
         }
-        return messages[random.nextInt(messages.length)];
+        return messages[random.nextInt(messages.length)].duplicate();
     }
 
 }
