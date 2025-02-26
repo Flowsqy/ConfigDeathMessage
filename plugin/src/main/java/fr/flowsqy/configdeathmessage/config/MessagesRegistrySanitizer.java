@@ -33,18 +33,19 @@ public class MessagesRegistrySanitizer {
             }
             final var data = sanitizedRegistry.computeIfAbsent(key, k -> new ModifiableMessagesData());
             final var messages = entry.getValue().toArray(new BaseComponent[0]);
-            if (modifier != null) {
-                if (modifier.equals("player")) {
-                    data.player = messages;
-                    continue;
-                }
-                if (modifier.equals("item")) {
-                    data.item = messages;
-                    continue;
-                }
-                logger.warning("Wrong modifier '" + modifier + "' for key '" + entry.getKey() + "'. Ignoring it");
+            if (modifier == null) {
+                data.base = messages;
+                continue;
             }
-            data.base = messages;
+            if (modifier.equals("player")) {
+                data.player = messages;
+                continue;
+            }
+            if (modifier.equals("item")) {
+                data.item = messages;
+                continue;
+            }
+            data.specifics.put(modifier, messages);
         }
         final var unmodifiableSanitizedRegistry = new HashMap<String, MessagesData>(sanitizedRegistry.size());
         for (var entry : sanitizedRegistry.entrySet()) {
@@ -55,9 +56,10 @@ public class MessagesRegistrySanitizer {
 
     private static class ModifiableMessagesData {
         private BaseComponent[] base, player, item;
+        private final Map<String, BaseComponent[]> specifics = new HashMap<>();
 
         public MessagesData toUnmodifible() {
-            return new MessagesData(base, player, item);
+            return new MessagesData(base, player, item, specifics);
         }
     }
 

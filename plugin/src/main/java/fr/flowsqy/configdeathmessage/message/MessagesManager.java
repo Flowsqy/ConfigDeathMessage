@@ -38,7 +38,7 @@ public class MessagesManager {
             return getBaseMessage(messagesData, victim);
         }
         if (!(killer instanceof Player playerKiller)) {
-            return getKillerMessage(messagesData, victim, killer);
+            return getSpecificKillerMessage(messagesData, victim, killer);
         }
         final var playerInv = playerKiller.getInventory();
         final var mainHandItem = playerInv.getItemInMainHand();
@@ -74,6 +74,17 @@ public class MessagesManager {
         return replaceKillerPlaceholders(message, victim, killer);
     }
 
+    @Nullable
+    private BaseComponent getSpecificKillerMessage(@NotNull MessagesData messagesData, @NotNull Player victim,
+            @NotNull Entity killer) {
+        final var messages = messagesData.specifics().get(killer.getType().getKeyOrThrow().getKey());
+        if (messages == null) {
+            return getKillerMessage(messagesData, victim, killer);
+        }
+        final var message = getRandomMessage(messages);
+        return replaceKillerPlaceholders(message, victim, killer);
+    }
+
     @NotNull
     private BaseComponent replaceKillerPlaceholders(@NotNull BaseComponent message, @NotNull Player victim,
             @NotNull Entity killer) {
@@ -86,7 +97,7 @@ public class MessagesManager {
     private BaseComponent getPlayerMessage(@NotNull MessagesData messagesData, @NotNull Player victim,
             @NotNull Player killer) {
         if (messagesData.player() == null) {
-            return getKillerMessage(messagesData, victim, killer);
+            return getBaseMessage(messagesData, victim);
         }
         final var message = getRandomMessage(messagesData.player());
         return replacePlayerPlaceholders(message, victim, killer);
@@ -112,9 +123,9 @@ public class MessagesManager {
     @NotNull
     private BaseComponent replaceItemPlaceholders(@NotNull BaseComponent message, @NotNull Player victim,
             @NotNull Player killer, @NotNull ItemStack itemStack) {
-        final var itemName = Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName();
-        final var itemComponent = itemName != null ? new TextComponent(itemName)
-                : new TranslatableComponent(itemStack.getTranslationKey());
+        final var itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
+        final var itemComponent = itemMeta.hasDisplayName() ? TextComponent.fromLegacy(itemMeta.getDisplayName())
+                : new TranslatableComponent(itemStack.getType().getTranslationKey());
         componentReplacer.replace(message, "%item%", itemComponent);
         return replacePlayerPlaceholders(message, victim, killer);
     }
