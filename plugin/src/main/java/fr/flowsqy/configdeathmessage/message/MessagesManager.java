@@ -30,7 +30,7 @@ public class MessagesManager {
 
     @Nullable
     public BaseComponent getMessage(@NotNull Player victim, @NotNull DamageType damageType, @Nullable Entity killer) {
-        final var messagesData = registry.get(damageType.getKeyOrThrow().getKey());
+        final var messagesData = registry.get(damageType.getKey().getKey());
         if (messagesData == null) {
             return null;
         }
@@ -77,7 +77,7 @@ public class MessagesManager {
     @Nullable
     private BaseComponent getSpecificKillerMessage(@NotNull MessagesData messagesData, @NotNull Player victim,
             @NotNull Entity killer) {
-        final var messages = messagesData.specifics().get(killer.getType().getKeyOrThrow().getKey());
+        final var messages = messagesData.specifics().get(killer.getType().getKey().getKey());
         if (messages == null) {
             return getKillerMessage(messagesData, victim, killer);
         }
@@ -135,7 +135,7 @@ public class MessagesManager {
         if (messages.length == 1) {
             return messages[0].duplicate();
         }
-        return messages[random.nextInt(messages.length)].duplicate();
+        return messages[random.nextInt(messages.length * 0xFFFFFF) / 0xFFFFFF].duplicate();
     }
 
 }
